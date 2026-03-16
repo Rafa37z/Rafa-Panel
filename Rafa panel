@@ -2702,5 +2702,5 @@ if Config.SilentAimActive then toggleSilentAim(true) end
 selectTab(1)
 tabContents[1].Frame.Visible = true
 
-createNotification("Rafa37 Panel", "Carregado! Versão 2.6.1 - Atalhos corrigidos", "success")
-print("✅ Rafa37 Panel v2.6.1 - Atalhos funcionando perfeitamente!")
+createNotification("Rafa37 Panel", "Carregado! Versão 2.6.1 - ", "success")
+print("✅ Rafa37 Panel v2.6.1")
