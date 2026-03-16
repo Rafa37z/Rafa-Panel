@@ -1,9 +1,6 @@
 --[[
-    RAFA37 PANEL V2.6.5 - INVISIBLE REMOVIDO
-    - Corrigido: View mode com UI sincronizado e sem reativar sozinho
-    - Removido: Opção Invisible (não funciona em jogos atuais)
-    - Notificações em português
-    - Temas funcionando 100%
+    RAFA37 PANEL V2.6.1 - ATALHOS CORRIGIDOS
+    Design: Preto com detalhes roxos + Imagem personalizada
     Atalhos: E = ESP | K = Aim Bot | J = Fly | CTRL + Clique = TP Tool
     Autor: Rafa37
 ]]
@@ -20,9 +17,6 @@ local Lighting = game:GetService("Lighting")
 local camera = workspace.CurrentCamera
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
-
--- Pega o código fonte do script atual
-local scriptSource = script and script:GetAttribute("Source") or nil
 
 -- Verificação inicial
 if not player then
@@ -45,6 +39,7 @@ local Config = {
     TPToolActive = false,
     FPSActive = true,
     HealthBarActive = false,
+    InvisibleActive = false,
     SpinActive = false,
     SpinSpeed = 10,
     ShaderActive = false,
@@ -69,6 +64,7 @@ local DefaultConfig = {
     TPToolActive = false,
     FPSActive = true,
     HealthBarActive = false,
+    InvisibleActive = false,
     SpinActive = false,
     SpinSpeed = 10,
     ShaderActive = false,
@@ -79,278 +75,24 @@ local DefaultConfig = {
 }
 
 --[[
-    ========== TEMAS DISPONÍVEIS ==========
+    ========== CORES FIXAS ==========
 ]]
-local Themes = {
-    {
-        Name = "Roxo Original",
-        Background = Color3.fromRGB(10, 10, 15),
-        Surface = Color3.fromRGB(20, 20, 25),
-        Text = Color3.fromRGB(255, 255, 255),
-        TextSecondary = Color3.fromRGB(200, 200, 200),
-        Danger = Color3.fromRGB(80, 80, 100),
-        Primary = Color3.fromRGB(160, 100, 255),
-        PrimaryDark = Color3.fromRGB(120, 70, 200),
-        Secondary = Color3.fromRGB(200, 150, 255),
-        Success = Color3.fromRGB(160, 100, 255),
-        HealthGreen = Color3.fromRGB(0, 255, 100),
-        HealthYellow = Color3.fromRGB(255, 255, 0),
-        HealthRed = Color3.fromRGB(255, 50, 50),
-        ViewColor = Color3.fromRGB(100, 200, 255),
-        ViewActiveColor = Color3.fromRGB(255, 100, 100)
-    },
-    {
-        Name = "Vermelho Sangue",
-        Background = Color3.fromRGB(20, 5, 5),
-        Surface = Color3.fromRGB(40, 10, 10),
-        Text = Color3.fromRGB(255, 255, 255),
-        TextSecondary = Color3.fromRGB(220, 180, 180),
-        Danger = Color3.fromRGB(120, 40, 40),
-        Primary = Color3.fromRGB(255, 50, 50),
-        PrimaryDark = Color3.fromRGB(200, 30, 30),
-        Secondary = Color3.fromRGB(255, 120, 120),
-        Success = Color3.fromRGB(255, 50, 50),
-        HealthGreen = Color3.fromRGB(0, 255, 100),
-        HealthYellow = Color3.fromRGB(255, 255, 0),
-        HealthRed = Color3.fromRGB(255, 50, 50),
-        ViewColor = Color3.fromRGB(100, 200, 255),
-        ViewActiveColor = Color3.fromRGB(255, 100, 100)
-    },
-    {
-        Name = "Azul Oceano",
-        Background = Color3.fromRGB(5, 10, 20),
-        Surface = Color3.fromRGB(10, 20, 40),
-        Text = Color3.fromRGB(255, 255, 255),
-        TextSecondary = Color3.fromRGB(180, 200, 220),
-        Danger = Color3.fromRGB(40, 60, 100),
-        Primary = Color3.fromRGB(50, 150, 255),
-        PrimaryDark = Color3.fromRGB(30, 100, 200),
-        Secondary = Color3.fromRGB(120, 180, 255),
-        Success = Color3.fromRGB(50, 150, 255),
-        HealthGreen = Color3.fromRGB(0, 255, 100),
-        HealthYellow = Color3.fromRGB(255, 255, 0),
-        HealthRed = Color3.fromRGB(255, 50, 50),
-        ViewColor = Color3.fromRGB(100, 200, 255),
-        ViewActiveColor = Color3.fromRGB(255, 100, 100)
-    },
-    {
-        Name = "Verde Neon",
-        Background = Color3.fromRGB(5, 15, 5),
-        Surface = Color3.fromRGB(10, 30, 10),
-        Text = Color3.fromRGB(255, 255, 255),
-        TextSecondary = Color3.fromRGB(180, 220, 180),
-        Danger = Color3.fromRGB(40, 80, 40),
-        Primary = Color3.fromRGB(0, 255, 100),
-        PrimaryDark = Color3.fromRGB(0, 180, 70),
-        Secondary = Color3.fromRGB(100, 255, 150),
-        Success = Color3.fromRGB(0, 255, 100),
-        HealthGreen = Color3.fromRGB(0, 255, 100),
-        HealthYellow = Color3.fromRGB(255, 255, 0),
-        HealthRed = Color3.fromRGB(255, 50, 50),
-        ViewColor = Color3.fromRGB(100, 200, 255),
-        ViewActiveColor = Color3.fromRGB(255, 100, 100)
-    },
-    {
-        Name = "Amarelo Ouro",
-        Background = Color3.fromRGB(20, 15, 5),
-        Surface = Color3.fromRGB(40, 30, 10),
-        Text = Color3.fromRGB(255, 255, 255),
-        TextSecondary = Color3.fromRGB(220, 200, 150),
-        Danger = Color3.fromRGB(100, 80, 40),
-        Primary = Color3.fromRGB(255, 200, 50),
-        PrimaryDark = Color3.fromRGB(200, 150, 30),
-        Secondary = Color3.fromRGB(255, 220, 120),
-        Success = Color3.fromRGB(255, 200, 50),
-        HealthGreen = Color3.fromRGB(0, 255, 100),
-        HealthYellow = Color3.fromRGB(255, 255, 0),
-        HealthRed = Color3.fromRGB(255, 50, 50),
-        ViewColor = Color3.fromRGB(100, 200, 255),
-        ViewActiveColor = Color3.fromRGB(255, 100, 100)
-    },
-    {
-        Name = "Rosa Pink",
-        Background = Color3.fromRGB(20, 5, 15),
-        Surface = Color3.fromRGB(40, 10, 30),
-        Text = Color3.fromRGB(255, 255, 255),
-        TextSecondary = Color3.fromRGB(220, 180, 200),
-        Danger = Color3.fromRGB(100, 40, 70),
-        Primary = Color3.fromRGB(255, 80, 200),
-        PrimaryDark = Color3.fromRGB(200, 50, 150),
-        Secondary = Color3.fromRGB(255, 150, 220),
-        Success = Color3.fromRGB(255, 80, 200),
-        HealthGreen = Color3.fromRGB(0, 255, 100),
-        HealthYellow = Color3.fromRGB(255, 255, 0),
-        HealthRed = Color3.fromRGB(255, 50, 50),
-        ViewColor = Color3.fromRGB(100, 200, 255),
-        ViewActiveColor = Color3.fromRGB(255, 100, 100)
-    }
+local Colors = {
+    Background = Color3.fromRGB(10, 10, 15),
+    Surface = Color3.fromRGB(20, 20, 25),
+    Text = Color3.fromRGB(255, 255, 255),
+    TextSecondary = Color3.fromRGB(200, 200, 200),
+    Danger = Color3.fromRGB(80, 80, 100),
+    Primary = Color3.fromRGB(160, 100, 255),
+    PrimaryDark = Color3.fromRGB(120, 70, 200),
+    Secondary = Color3.fromRGB(200, 150, 255),
+    Success = Color3.fromRGB(160, 100, 255),
+    HealthGreen = Color3.fromRGB(0, 255, 100),
+    HealthYellow = Color3.fromRGB(255, 255, 0),
+    HealthRed = Color3.fromRGB(255, 50, 50),
+    ViewColor = Color3.fromRGB(100, 200, 255),
+    ViewActiveColor = Color3.fromRGB(255, 100, 100)
 }
-
--- Tema atual (começa com o primeiro)
-local CurrentTheme = 1
-
--- TENTA CARREGAR O TEMA SALVO (adicione estas linhas)
-pcall(function()
-    if isfile and isfile("Rafa37_Theme.json") then
-        local content = readfile("Rafa37_Theme.json")
-        local data = HttpService:JSONDecode(content)
-        if data and data.Theme then
-            CurrentTheme = data.Theme
-        end
-    end
-end)
-
-local Colors = Themes[CurrentTheme]
-
---[[
-    ========== FUNÇÃO PARA APLICAR TEMA - VERSÃO FINAL ==========
-]]
-local function applyTheme(themeIndex)
-    if themeIndex < 1 or themeIndex > #Themes then return end
-    
-    CurrentTheme = themeIndex
-    Colors = Themes[themeIndex]
-    
-    -- SALVA O TEMA EM ARQUIVO (ADICIONE ESTAS 7 LINHAS)
-    pcall(function()
-        local data = {Theme = CurrentTheme}
-        local jsonData = HttpService:JSONEncode(data)
-        if writefile then
-            writefile("Rafa37_Theme.json", jsonData)
-        end
-    end)
-    
-    -- (o resto da sua função continua igual)
-    -- ... todo o código de atualização de cores ...
-    Colors = Themes[themeIndex]
-    
-    -- Função para percorrer e atualizar todos os elementos
-    local function updateAllElements()
-        if not mainFrame then return end
-        
-        -- Atualiza elementos principais
-        mainFrame.BackgroundColor3 = Colors.Background
-        colorOverlay.BackgroundColor3 = Colors.Primary
-        shadow.ImageColor3 = Colors.Primary
-        topBar.BackgroundColor3 = Colors.Surface
-        title.TextColor3 = Colors.Primary
-        versionLabel.TextColor3 = Colors.Secondary
-        closeButton.ImageColor3 = Colors.TextSecondary
-        
-        -- Atualiza abas
-        for i, btn in ipairs(tabButtons) do
-            btn.BackgroundColor3 = Colors.Surface
-            if i == currentTab then
-                btn.TextColor3 = Colors.Primary
-            else
-                btn.TextColor3 = Colors.TextSecondary
-            end
-        end
-        
-        -- Atualiza scrollbars
-        for i, content in ipairs(tabContents) do
-            if content and content.Frame then
-                content.Frame.ScrollBarImageColor3 = Colors.Primary
-            end
-        end
-        
-        -- Atualiza TODOS os frames e textos dentro do mainFrame
-        for _, descendant in ipairs(mainFrame:GetDescendants()) do
-            -- Frames de fundo
-            if descendant:IsA("Frame") and descendant ~= colorOverlay and descendant ~= backgroundImage then
-                if descendant.Name == "Surface" or descendant:FindFirstAncestorWhichIsA("ScrollingFrame") then
-                    descendant.BackgroundColor3 = Colors.Surface
-                elseif descendant.BackgroundColor3 ~= Color3.new(1, 1, 1) and descendant.BackgroundTransparency < 1 then
-                    descendant.BackgroundColor3 = Colors.Surface
-                end
-            end
-            
-            -- TextLabels e TextButtons
-            if descendant:IsA("TextLabel") or descendant:IsA("TextButton") then
-                if descendant:IsA("TextButton") then
-                    if descendant.Text == "VIEW" then
-                        -- VIEW buttons são tratados separadamente
-                        if viewTarget and descendant.Parent and descendant.Parent:FindFirstChild("TextLabel") then
-                            local nameLabel = descendant.Parent:FindFirstChild("TextLabel")
-                            if nameLabel and nameLabel.Text == viewTarget.Name then
-                                descendant.BackgroundColor3 = Colors.ViewActiveColor
-                            else
-                                descendant.BackgroundColor3 = Colors.ViewColor
-                            end
-                        else
-                            descendant.BackgroundColor3 = Colors.ViewColor
-                        end
-                    elseif descendant.Text == "TP" then
-                        descendant.BackgroundColor3 = Colors.Primary
-                    elseif descendant.Text == "ON" or descendant.Text == "OFF" then
-                        -- Toggles: a cor já é gerenciada pelo estado
-                        if descendant.Text == "ON" then
-                            descendant.BackgroundColor3 = Colors.Primary
-                        else
-                            descendant.BackgroundColor3 = Colors.Danger
-                        end
-                    else
-                        descendant.TextColor3 = Colors.TextSecondary
-                    end
-                else
-                    -- TextLabels
-                    if descendant.Text and (string.find(descendant.Text, ":") or string.len(descendant.Text) > 20) then
-                        descendant.TextColor3 = Colors.TextSecondary
-                    else
-                        descendant.TextColor3 = Colors.Text
-                    end
-                end
-            end
-            
-            -- Sliders
-            if descendant:IsA("Frame") and descendant.Name == "" and descendant.Parent and descendant.Parent:IsA("Frame") then
-                -- Tenta identificar sliders pela estrutura
-                local parent = descendant.Parent
-                if parent and parent:FindFirstChild("TextLabel") and parent:FindFirstChild("TextButton") then
-                    local slider = descendant
-                    local fill = slider:FindFirstChild("Frame")
-                    if fill then
-                        slider.BackgroundColor3 = Colors.Danger
-                        fill.BackgroundColor3 = Colors.Primary
-                    end
-                end
-            end
-        end
-        
-        -- Atualiza notificações
-        for _, notif in ipairs(notificationContainer:GetChildren()) do
-            if notif:IsA("Frame") then
-                notif.BackgroundColor3 = Colors.Surface
-                local bar = notif:FindFirstChild("Frame")
-                if bar then
-                    bar.BackgroundColor3 = Colors.Primary
-                end
-                local titleLabel = notif:FindFirstChild("TextLabel")
-                if titleLabel then
-                    titleLabel.TextColor3 = Colors.Primary
-                end
-            end
-        end
-        
-        -- Atualiza FPS counter
-        if fpsLabel then
-            fpsLabel.BackgroundColor3 = Colors.Surface
-            fpsLabel.TextColor3 = Colors.Primary
-        end
-    end
-    
-    -- Aplica as atualizações
-    updateAllElements()
-    
-    -- Força uma atualização visual
-    if mainFrame then
-        mainFrame.Visible = false
-        task.wait()
-        mainFrame.Visible = true
-    end
-    
-    createNotification("Tema", "Tema alterado para: " .. Themes[themeIndex].Name, "success")
-end
 
 --[[
     ========== FUNÇÕES AUXILIARES ==========
@@ -465,7 +207,7 @@ versionLabel.Name = "Version"
 versionLabel.Size = UDim2.new(0, 60, 1, 0)
 versionLabel.Position = UDim2.new(1, -100, 0, 0)
 versionLabel.BackgroundTransparency = 1
-versionLabel.Text = "v2.6.5"
+versionLabel.Text = "v2.6.1"
 versionLabel.TextColor3 = Colors.Secondary
 versionLabel.TextXAlignment = Enum.TextXAlignment.Right
 versionLabel.Font = Enum.Font.GothamBold
@@ -1004,6 +746,7 @@ local States = {
     tpTool = false,
     fps = Config.FPSActive,
     healthBar = false,
+    invisible = false,
     spin = false,
     shader = false,
     infiniteJump = false,
@@ -1723,6 +1466,58 @@ local function toggleHealthBar(state)
 end
 
 --[[
+    ========== INVISIBLE ==========
+]]
+local originalTransparencies = {}
+
+local function toggleInvisible(state)
+    States.invisible = state
+    local character = player.Character
+    
+    if not character then return end
+    
+    if Toggles.invisible then
+        Toggles.invisible.setState(state)
+    end
+    
+    if state then
+        originalTransparencies = {}
+        for _, part in ipairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                originalTransparencies[part] = part.Transparency
+            end
+        end
+        
+        for _, part in ipairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Transparency = 1
+            end
+        end
+        
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+        end
+        
+        createNotification("Invisible", "Ativado", "success")
+    else
+        for part, transparency in pairs(originalTransparencies) do
+            if part and part.Parent then
+                pcall(function() part.Transparency = transparency end)
+            end
+        end
+        originalTransparencies = {}
+        
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
+        end
+        
+        createNotification("Invisible", "Desativado", "info")
+    end
+end
+
+--[[
     ========== SPIN ==========
 ]]
 local function toggleSpin(state)
@@ -2038,34 +1833,11 @@ local function teleportToPlayer(targetPlayer)
 end
 
 --[[
-    ========== VIEW - CORREÇÃO FINAL ==========
-    Agora com UI sincronizado e sem reativar sozinho
+    ========== VIEW ==========
 ]]
 local viewTarget = nil
-local viewTargetChar = nil
-local viewTargetRoot = nil
-local viewActive = false
 
--- Função para atualizar a cor de TODOS os botões VIEW
-local function updateViewButtons(activePlayer)
-    for _, btn in ipairs(viewButtons) do
-        if btn and btn.Parent then
-            local parentFrame = btn.Parent
-            if parentFrame and parentFrame:FindFirstChild("TextLabel") then
-                local nameLabel = parentFrame:FindFirstChild("TextLabel")
-                if nameLabel and activePlayer and nameLabel.Text == activePlayer.Name then
-                    btn.BackgroundColor3 = Colors.ViewActiveColor
-                else
-                    btn.BackgroundColor3 = Colors.ViewColor
-                end
-            end
-        end
-    end
-end
-
--- Função para encerrar view mode
 local function endViewMode()
-    -- Desconecta TUDO
     if viewConnection then
         viewConnection:Disconnect()
         viewConnection = nil
@@ -2083,32 +1855,27 @@ local function endViewMode()
         viewESCConnection = nil
     end
     
-    -- Volta câmera ao normal
     camera.CameraType = Enum.CameraType.Custom
     
-    -- Reseta todos os botões para a cor padrão
-    updateViewButtons(nil)
+    for _, btn in ipairs(viewButtons) do
+        if btn and btn.Parent then
+            btn.BackgroundColor3 = Colors.ViewColor
+        end
+    end
     
-    -- Limpa todas as referências
     viewTarget = nil
-    viewTargetChar = nil
-    viewTargetRoot = nil
-    viewActive = false
-    
     createNotification("View", "Visualização encerrada", "info")
 end
 
 local function viewPlayer(targetPlayer)
-    -- Se clicou no mesmo jogador que já está sendo visualizado, apenas encerra
-    if viewActive and viewTarget == targetPlayer then
-        endViewMode()
-        return
-    end
-    
-    -- Se já está visualizando alguém diferente, encerra
-    if viewActive then
-        endViewMode()
-        task.wait(0.1)
+    if viewConnection then
+        if viewTarget == targetPlayer then
+            endViewMode()
+            return
+        else
+            endViewMode()
+            task.wait(0.1)
+        end
     end
     
     if not targetPlayer or targetPlayer == player then
@@ -2128,15 +1895,6 @@ local function viewPlayer(targetPlayer)
         return
     end
     
-    -- Guarda referências
-    viewTarget = targetPlayer
-    viewTargetChar = targetChar
-    viewTargetRoot = targetRoot
-    viewActive = true
-    
-    -- Atualiza os botões imediatamente
-    updateViewButtons(targetPlayer)
-    
     camera.CameraType = Enum.CameraType.Scriptable
     
     local camDistance = 10
@@ -2146,45 +1904,22 @@ local function viewPlayer(targetPlayer)
     local zoomSpeed = 2
     
     local function updateCamera()
-        -- Se não está mais ativo, não faz nada
-        if not viewActive then return end
-        
-        -- Verifica se o personagem ainda existe
-        if not viewTarget or not viewTargetChar or not viewTargetChar.Parent then
-            -- Tenta pegar o personagem novamente
-            if viewTarget then
-                viewTargetChar = viewTarget.Character
-                if viewTargetChar then
-                    viewTargetRoot = viewTargetChar:FindFirstChild("HumanoidRootPart")
-                end
-            end
-            
-            -- Se ainda não tiver, encerra
-            if not viewTargetRoot or not viewTargetRoot.Parent then
-                endViewMode()
-                return
-            end
-        end
-        
-        -- Se perdeu o root part por algum motivo
-        if not viewTargetRoot or not viewTargetRoot.Parent then
+        if not targetChar or not targetRoot or not targetRoot.Parent then
             endViewMode()
             return
         end
         
-        -- Atualiza câmera
         local offset = Vector3.new(
             math.sin(camAngle) * camDistance,
             camHeight,
             math.cos(camAngle) * camDistance
         )
         
-        camera.CFrame = CFrame.new(viewTargetRoot.Position + offset, viewTargetRoot.Position + Vector3.new(0, 2, 0))
+        camera.CFrame = CFrame.new(targetRoot.Position + offset, targetRoot.Position + Vector3.new(0, 2, 0))
     end
     
-    -- Mouse movement
     viewMouseConnection = UserInputService.InputChanged:Connect(function(input)
-        if viewActive and input.UserInputType == Enum.UserInputType.MouseMovement then
+        if input.UserInputType == Enum.UserInputType.MouseMovement and viewConnection then
             local delta = input.Delta
             camAngle = camAngle + delta.X * mouseSensitivity
             camHeight = math.clamp(camHeight - delta.Y * mouseSensitivity * 10, 1, 8)
@@ -2192,23 +1927,35 @@ local function viewPlayer(targetPlayer)
         end
     end)
     
-    -- Mouse wheel zoom
     viewWheelConnection = UserInputService.InputChanged:Connect(function(input)
-        if viewActive and input.UserInputType == Enum.UserInputType.MouseWheel then
+        if input.UserInputType == Enum.UserInputType.MouseWheel and viewConnection then
             camDistance = math.clamp(camDistance - input.Position.Z * zoomSpeed, 3, 30)
             updateCamera()
         end
     end)
     
-    -- ESC to exit
     viewESCConnection = UserInputService.InputBegan:Connect(function(input)
-        if input.KeyCode == Enum.KeyCode.Escape and viewActive then
+        if input.KeyCode == Enum.KeyCode.Escape and viewConnection then
             endViewMode()
         end
     end)
     
-    -- Update loop
     viewConnection = RunService.Heartbeat:Connect(updateCamera)
+    viewTarget = targetPlayer
+    
+    for _, btn in ipairs(viewButtons) do
+        if btn and btn.Parent then
+            local parentFrame = btn.Parent
+            if parentFrame and parentFrame:FindFirstChild("TextLabel") then
+                local nameLabel = parentFrame:FindFirstChild("TextLabel")
+                if nameLabel and nameLabel.Text == targetPlayer.Name then
+                    btn.BackgroundColor3 = Colors.ViewActiveColor
+                else
+                    btn.BackgroundColor3 = Colors.ViewColor
+                end
+            end
+        end
+    end
     
     createNotification("View", "Visualizando " .. targetPlayer.Name .. " - ESC para sair", "info")
 end
@@ -2228,6 +1975,7 @@ local function resetAllSettings()
     Config.TPToolActive = DefaultConfig.TPToolActive
     Config.FPSActive = DefaultConfig.FPSActive
     Config.HealthBarActive = DefaultConfig.HealthBarActive
+    Config.InvisibleActive = DefaultConfig.InvisibleActive
     Config.SpinActive = DefaultConfig.SpinActive
     Config.SpinSpeed = DefaultConfig.SpinSpeed
     Config.ShaderActive = DefaultConfig.ShaderActive
@@ -2246,19 +1994,20 @@ local function resetAllSettings()
     if States.tpTool then toggleTPTool(false) end
     if States.fps then toggleFPS(false) end
     if healthBarActive then toggleHealthBar(false) end
+    if States.invisible then toggleInvisible(false) end
     if States.spin then toggleSpin(false) end
     if shaderActive then toggleShader(false) end
     if infiniteJumpActive then toggleInfiniteJump(false) end
     if fullbrightActive then toggleFullbright(false) end
     if triggerBotActive then toggleTriggerBot(false) end
     if States.silentAim then toggleSilentAim(false) end
-    if viewActive then endViewMode() end
+    if viewConnection then endViewMode() end
     
     createNotification("Reset", "Configurações restauradas!", "success")
 end
 
 --[[
-    ========== SISTEMA DE ATALHOS ==========
+    ========== SISTEMA DE ATALHOS CORRIGIDO ==========
 ]]
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -2342,6 +2091,7 @@ local function saveSettings()
             TPToolActive = Config.TPToolActive,
             FPSActive = Config.FPSActive,
             HealthBarActive = Config.HealthBarActive,
+            InvisibleActive = Config.InvisibleActive,
             SpinActive = Config.SpinActive,
             SpinSpeed = Config.SpinSpeed,
             ShaderActive = Config.ShaderActive,
@@ -2376,6 +2126,7 @@ local function loadSettings()
                 Config.TPToolActive = data.TPToolActive or false
                 Config.FPSActive = data.FPSActive or true
                 Config.HealthBarActive = data.HealthBarActive or false
+                Config.InvisibleActive = data.InvisibleActive or false
                 Config.SpinActive = data.SpinActive or false
                 Config.SpinSpeed = data.SpinSpeed or 10
                 Config.ShaderActive = data.ShaderActive or false
@@ -2623,170 +2374,6 @@ task.spawn(function()
     perfilContent.CanvasSize = UDim2.new(0, 0, 0, perfilLayout.AbsoluteContentSize.Y + 20)
 end)
 
--- Card de Temas
-local themeCard = Instance.new("Frame")
-themeCard.Name = "ThemeCard"
-themeCard.Size = UDim2.new(1, -10, 0, 150)
-themeCard.BackgroundColor3 = Colors.Surface
-themeCard.BackgroundTransparency = 0.1
-themeCard.BorderSizePixel = 0
-themeCard.ZIndex = 15
-themeCard.Parent = perfilContent
-
-local themeCorner = Instance.new("UICorner")
-themeCorner.CornerRadius = UDim.new(0, 12)
-themeCorner.Parent = themeCard
-
-local themeTitle = Instance.new("TextLabel")
-themeTitle.Size = UDim2.new(1, -20, 0, 30)
-themeTitle.Position = UDim2.new(0, 10, 0, 10)
-themeTitle.BackgroundTransparency = 1
-themeTitle.Text = "🎨 TEMAS DISPONÍVEIS"
-themeTitle.TextColor3 = Colors.Primary
-themeTitle.TextXAlignment = Enum.TextXAlignment.Left
-themeTitle.Font = Enum.Font.GothamBold
-themeTitle.TextSize = 18
-themeTitle.ZIndex = 16
-themeTitle.Parent = themeCard
-
--- Frame para os botões de tema (com scroll)
-local themeScroll = Instance.new("ScrollingFrame")
-themeScroll.Size = UDim2.new(1, -20, 0, 90)
-themeScroll.Position = UDim2.new(0, 10, 0, 45)
-themeScroll.BackgroundTransparency = 1
-themeScroll.BorderSizePixel = 0
-themeScroll.ScrollBarThickness = 4
-themeScroll.ScrollBarImageColor3 = Colors.Primary
-themeScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-themeScroll.AutomaticCanvasSize = Enum.AutomaticSize.X
-themeScroll.ScrollingDirection = Enum.ScrollingDirection.X
-themeScroll.Parent = themeCard
-
-local themeLayout = Instance.new("UIListLayout")
-themeLayout.FillDirection = Enum.FillDirection.Horizontal
-themeLayout.Padding = UDim.new(0, 8)
-themeLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-themeLayout.SortOrder = Enum.SortOrder.LayoutOrder
-themeLayout.Parent = themeScroll
-
--- Cria botões para cada tema
-for i, theme in ipairs(Themes) do
-    local themeButton = Instance.new("TextButton")
-    themeButton.Size = UDim2.new(0, 100, 1, -10)
-    themeButton.Position = UDim2.new(0, 0, 0, 5)
-    themeButton.BackgroundColor3 = theme.Surface
-    themeButton.Text = ""
-    themeButton.ZIndex = 17
-    themeButton.Parent = themeScroll
-    
-    local themeBtnCorner = Instance.new("UICorner")
-    themeBtnCorner.CornerRadius = UDim.new(0, 8)
-    themeBtnCorner.Parent = themeButton
-    
-    -- Preview das cores
-    local preview1 = Instance.new("Frame")
-    preview1.Size = UDim2.new(0, 20, 1, -10)
-    preview1.Position = UDim2.new(0, 5, 0, 5)
-    preview1.BackgroundColor3 = theme.Primary
-    preview1.BorderSizePixel = 0
-    preview1.ZIndex = 18
-    preview1.Parent = themeButton
-    
-    local preview1Corner = Instance.new("UICorner")
-    preview1Corner.CornerRadius = UDim.new(0, 4)
-    preview1Corner.Parent = preview1
-    
-    local preview2 = Instance.new("Frame")
-    preview2.Size = UDim2.new(0, 20, 1, -10)
-    preview2.Position = UDim2.new(0, 28, 0, 5)
-    preview2.BackgroundColor3 = theme.Secondary
-    preview2.BorderSizePixel = 0
-    preview2.ZIndex = 18
-    preview2.Parent = themeButton
-    
-    local preview2Corner = Instance.new("UICorner")
-    preview2Corner.CornerRadius = UDim.new(0, 4)
-    preview2Corner.Parent = preview2
-    
-    local themeName = Instance.new("TextLabel")
-    themeName.Size = UDim2.new(1, -55, 1, 0)
-    themeName.Position = UDim2.new(0, 53, 0, 0)
-    themeName.BackgroundTransparency = 1
-    themeName.Text = theme.Name
-    themeName.TextColor3 = theme.Text
-    themeName.TextXAlignment = Enum.TextXAlignment.Left
-    themeName.Font = Enum.Font.GothamBold
-    themeName.TextSize = 12
-    themeName.TextWrapped = true
-    themeName.ZIndex = 18
-    themeName.Parent = themeButton
-    
-    -- Indicador de tema atual
-    local indicator = Instance.new("Frame")
-    indicator.Name = "Indicator"
-    indicator.Size = UDim2.new(1, -10, 0, 3)
-    indicator.Position = UDim2.new(0, 5, 1, -8)
-    indicator.BackgroundColor3 = theme.Primary
-    indicator.BorderSizePixel = 0
-    indicator.ZIndex = 19
-    indicator.Visible = (i == CurrentTheme)
-    indicator.Parent = themeButton
-    
-    local indicatorCorner = Instance.new("UICorner")
-    indicatorCorner.CornerRadius = UDim.new(0, 2)
-    indicatorCorner.Parent = indicator
-    
-    themeButton.MouseButton1Click:Connect(function()
-        -- Atualiza indicadores visuais
-        for _, btn in ipairs(themeScroll:GetChildren()) do
-            if btn:IsA("TextButton") and btn:FindFirstChild("Indicator") then
-                btn.Indicator.Visible = false
-            end
-        end
-        indicator.Visible = true
-        
-        -- Aplica o tema
-        applyTheme(i)
-    end)
-end
-
--- Atualiza o canvas size do scroll
-themeLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    themeScroll.CanvasSize = UDim2.new(0, themeLayout.AbsoluteContentSize.X, 0, 0)
-end)
-task.spawn(function()
-    themeScroll.CanvasSize = UDim2.new(0, themeLayout.AbsoluteContentSize.X, 0, 0)
-end)
-
--- Botão de Reiniciar Painel (com GitHub)
-local restartCard = Instance.new("Frame")
--- ... (mesmo código do card, só muda a função do clique)
-
-restartButton.MouseButton1Click:Connect(function()
-    createNotification("Reiniciando", "Recarregando script do GitHub...", "info")
-    
-    -- Salva o tema
-    local savedTheme = CurrentTheme
-    pcall(function()
-        local data = {Theme = savedTheme}
-        local jsonData = HttpService:JSONEncode(data)
-        if writefile then
-            writefile("Rafa37_Theme.json", jsonData)
-        end
-    end)
-    
-    -- Destrói o painel
-    if screenGui then
-        screenGui:Destroy()
-    end
-    
-    task.wait(0.2)
-    
-    -- Carrega do GitHub
-    local scriptURL = "https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPO/main/Rafa37Panel.lua"
-    loadstring(game:HttpGet(scriptURL))()
-end)
-
 --[[
     ========== ABA COMBATE ==========
 ]]
@@ -2876,6 +2463,9 @@ Toggles.antiAfk = createToggle(utilsContent, "Anti AFK", "Evita kick por inativi
 
 createDivider(utilsContent, "TELEPORTE")
 Toggles.tpTool = createToggle(utilsContent, "TP Tool", "CTRL + Clique esquerdo para teleportar", toggleTPTool, Config.TPToolActive)
+
+createDivider(utilsContent, "EFEITOS")
+Toggles.invisible = createToggle(utilsContent, "Invisible", "Fica invisível para outros jogadores", toggleInvisible, Config.InvisibleActive)
 
 createDivider(utilsContent, "JOGADORES")
 
@@ -2982,7 +2572,7 @@ local function updatePlayerList()
                 viewButton.ZIndex = 19
                 viewButton.Parent = playerFrame
                 
-                if viewTarget == otherPlayer and viewActive then
+                if viewTarget == otherPlayer then
                     viewButton.BackgroundColor3 = Colors.ViewActiveColor
                 end
                 
@@ -3101,6 +2691,7 @@ resetButton.MouseButton1Click:Connect(resetAllSettings)
 
 if Config.FPSActive then toggleFPS(true) end
 if Config.HealthBarActive then toggleHealthBar(true) end
+if Config.InvisibleActive then toggleInvisible(true) end
 if Config.SpinActive then toggleSpin(true) end
 if Config.ShaderActive then toggleShader(true) end
 if Config.InfiniteJumpActive then toggleInfiniteJump(true) end
@@ -3111,5 +2702,5 @@ if Config.SilentAimActive then toggleSilentAim(true) end
 selectTab(1)
 tabContents[1].Frame.Visible = true
 
-createNotification("Rafa37 Panel", "Carregado! Versão 2.6.5 - Invisible removido", "success")
-print("✅ Rafa37 Panel v2.6.5 - Invisible removido | View funcionando")
+createNotification("Rafa37 Panel", "Carregado! Versão 2.6.1 - Atalhos corrigidos", "success")
+print("✅ Rafa37 Panel v2.6.1 - Atalhos funcionando perfeitamente!")
